@@ -1,0 +1,271 @@
+.message-center {
+  flex: 1;
+  background-color: rgba(16, 23, 40, 1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Header */
+.message-center-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid #2d3748;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(16, 23, 40, 1);
+}
+
+.header-content h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 4px 0;
+}
+
+.header-content p {
+  font-size: 14px;
+  color: #a0aec0;
+  margin: 0;
+}
+
+.new-template-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.new-template-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Messages Content */
+.messages-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-card {
+  background: rgba(26, 31, 46, 0.6);
+  border: 1px solid #2d3748;
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.message-card:hover {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.05);
+}
+
+.message-card.selected {
+  border-color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.2);
+}
+
+.message-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.message-checkbox-container {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.message-checkbox {
+  display: none;
+}
+
+.checkbox-label {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #4a5568;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.message-checkbox:checked + .checkbox-label {
+  background: #6366f1;
+  border-color: #6366f1;
+}
+
+.message-checkbox:checked + .checkbox-label .checkmark {
+  opacity: 1;
+}
+
+.checkmark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.checkmark::before {
+  content: '✓';
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.message-title-section {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.message-title-section h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.message-actions {
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.message-card:hover .message-actions {
+  opacity: 1;
+}
+
+.message-action-btn {
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #a0aec0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.message-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.message-content {
+  font-size: 14px;
+  color: #a0aec0;
+  line-height: 1.5;
+}
+
+/* Footer */
+.message-center-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #2d3748;
+  background-color: rgba(16, 23, 40, 1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ai-suggest-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 6px;
+  color: #8b5cf6;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ai-suggest-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+}
+
+.send-whatsapp-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #25d366;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.send-whatsapp-btn:hover:not(:disabled) {
+  background: #22c55e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.send-whatsapp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}/* Loadi
+ng and Empty States */
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(99, 102, 241, 0.2);
+  border-top: 3px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.empty-state p,
+.loading-state p {
+  margin: 0;
+  font-size: 14px;
+}
