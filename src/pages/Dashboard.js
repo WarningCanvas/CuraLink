@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DashboardHeader from '../components/DashboardHeader';
 import DashboardSidebar from '../components/DashboardSidebar';
 import MessageCenter from '../components/MessageCenter';
 import AIModal from '../components/AIModal';
+import databaseService from '../services/databaseService';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -14,6 +15,20 @@ const Dashboard = () => {
     phone: '1234567890'
   });
   const [showAIModal, setShowAIModal] = useState(false);
+  const [contacts, setContacts] = useState([]);
+
+  // Load contacts for the event manager
+  useEffect(() => {
+    const loadContacts = async () => {
+      try {
+        const contactsData = await databaseService.getAllContacts();
+        setContacts(contactsData || []);
+      } catch (error) {
+        console.error('Failed to load contacts for dashboard:', error);
+      }
+    };
+    loadContacts();
+  }, []);
 
   const handleContactSelect = (contact) => {
     setSelectedContact(contact);
@@ -29,7 +44,7 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard">
-      <DashboardHeader />
+      <DashboardHeader contacts={contacts} />
       
       <div className="dashboard-body">
         <DashboardSidebar 

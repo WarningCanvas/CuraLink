@@ -6,13 +6,7 @@ const NewTemplateModal = ({ isOpen, onClose, onSave }) => {
   const [messageContent, setMessageContent] = useState('');
   const [category, setCategory] = useState('general');
 
-  const placeholders = [
-    { name: 'ClientName', label: '{ClientName}' },
-    { name: 'Date', label: '{Date}' },
-    { name: 'Time', label: '{Time}' },
-    { name: 'Organization', label: '{Organization}' },
-    { name: 'DoctorName', label: '{DoctorName}' }
-  ];
+
 
   const handleSave = () => {
     if (templateTitle.trim() && messageContent.trim()) {
@@ -173,21 +167,7 @@ const NewTemplateModal = ({ isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Quick Placeholders:</label>
-            <div className="placeholders-grid">
-              {placeholders.map((placeholder) => (
-                <button
-                  key={placeholder.name}
-                  type="button"
-                  className="placeholder-btn"
-                  onClick={() => insertPlaceholder(placeholder.label)}
-                >
-                  + {placeholder.label}
-                </button>
-              ))}
-            </div>
-          </div>
+
         </div>
 
         <div className="modal-footer">
