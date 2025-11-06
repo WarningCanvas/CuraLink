@@ -115,6 +115,23 @@ class Database {
         metadata TEXT DEFAULT '{}',
         FOREIGN KEY (contact_id) REFERENCES contacts (id) ON DELETE CASCADE,
         FOREIGN KEY (template_id) REFERENCES templates (id) ON DELETE SET NULL
+      )`,
+
+      // Events table
+      `CREATE TABLE IF NOT EXISTS events (
+        id TEXT PRIMARY KEY,
+        contact_id TEXT NOT NULL,
+        contact_name TEXT NOT NULL,
+        event_type TEXT NOT NULL,
+        event_date DATE NOT NULL,
+        event_time TEXT NOT NULL,
+        notes TEXT,
+        color TEXT DEFAULT '#6366f1',
+        is_completed BOOLEAN DEFAULT 0,
+        reminder_sent BOOLEAN DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (contact_id) REFERENCES contacts (id) ON DELETE CASCADE
       )`
     ];
 
@@ -128,7 +145,11 @@ class Database {
       'CREATE INDEX IF NOT EXISTS idx_contacts_name ON contacts(name)',
       'CREATE INDEX IF NOT EXISTS idx_message_history_contact ON message_history(contact_id)',
       'CREATE INDEX IF NOT EXISTS idx_message_history_timestamp ON message_history(timestamp)',
-      'CREATE INDEX IF NOT EXISTS idx_templates_category ON templates(category)'
+      'CREATE INDEX IF NOT EXISTS idx_templates_category ON templates(category)',
+      'CREATE INDEX IF NOT EXISTS idx_events_date ON events(event_date)',
+      'CREATE INDEX IF NOT EXISTS idx_events_contact ON events(contact_id)',
+      'CREATE INDEX IF NOT EXISTS idx_events_type ON events(event_type)',
+      'CREATE INDEX IF NOT EXISTS idx_events_reminder ON events(reminder_sent, event_date)'
     ];
 
     for (const indexSQL of indexes) {

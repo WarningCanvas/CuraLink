@@ -93,6 +93,41 @@ function setupIpcHandlers() {
             throw error;
         }
     });
+
+    // Event handlers
+    ipcMain.handle('db-events', async (event, action, data) => {
+        try {
+            const services = getServices();
+
+            switch (action) {
+                case 'getAll':
+                    return await services.getAllEvents();
+                case 'getUpcoming':
+                    return await services.getUpcomingEvents(data || 1);
+                case 'getByDate':
+                    return await services.getEventsByDate(new Date(data));
+                case 'getByContact':
+                    return await services.getEventsByContact(data);
+                case 'create':
+                    return await services.createEvent(data);
+                case 'update':
+                    return await services.updateEvent(data.id, data);
+                case 'delete':
+                    return await services.deleteEvent(data);
+                case 'markCompleted':
+                    return await services.markEventCompleted(data);
+                case 'markReminderSent':
+                    return await services.markReminderSent(data);
+                case 'getNeedingReminders':
+                    return await services.getEventsNeedingReminders();
+                default:
+                    throw new Error(`Unknown event action: ${action}`);
+            }
+        } catch (error) {
+            console.error('Event IPC error:', error);
+            throw error;
+        }
+    });
 }
 
 // App event listeners

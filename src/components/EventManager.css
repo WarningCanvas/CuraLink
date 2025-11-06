@@ -14,19 +14,19 @@
 /* Modal Content Layout */
 .event-manager-layout {
   display: flex;
-  height: 600px;
+  height: 500px;
 }
 
 .calendar-section {
   flex: 1;
-  padding: 24px;
+  padding: 16px;
   border-right: 1px solid rgba(255, 255, 255, 0.1);
   overflow-y: auto;
 }
 
 .upcoming-section {
-  width: 300px;
-  padding: 24px;
+  width: 280px;
+  padding: 16px;
   background: rgba(255, 255, 255, 0.02);
 }
 
@@ -40,7 +40,7 @@
 
 /* Calendar */
 .calendar {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .calendar-nav {
@@ -50,11 +50,75 @@
   margin-bottom: 16px;
 }
 
-.calendar-nav h4 {
+/* Month Year Selector */
+.month-year-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.month-name {
   color: #ffffff;
   font-size: 16px;
   font-weight: 600;
-  margin: 0;
+}
+
+.year-picker-container {
+  position: relative;
+}
+
+.year-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 4px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.year-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.year-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: rgba(16, 23, 40, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  margin-top: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.year-option {
+  width: 100%;
+  padding: 8px 12px;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.year-option:hover {
+  background: rgba(99, 102, 241, 0.1);
+}
+
+.year-option.selected {
+  background: rgba(99, 102, 241, 0.2);
+  color: #c7d2fe;
 }
 
 .nav-btn {
@@ -110,12 +174,13 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   background: transparent;
   color: #ffffff;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 32px;
 }
 
 .day-cell:nth-child(7n) {
@@ -147,11 +212,11 @@
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
-  padding: 20px;
+  padding: 16px;
 }
 
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .form-group label {
@@ -201,6 +266,50 @@
   color: rgba(255, 255, 255, 0.5);
 }
 
+/* Time Picker */
+.time-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.time-select {
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.time-select:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.time-select option {
+  background: rgba(16, 23, 40, 1);
+  color: #ffffff;
+}
+
+.hour-select,
+.minute-select {
+  width: 60px;
+}
+
+.ampm-select {
+  width: 65px;
+}
+
+.time-separator {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 600;
+}
+
 .save-event-btn {
   width: 100%;
   padding: 12px;
@@ -229,7 +338,7 @@
   box-shadow: none;
 }
 
-/* Upcoming Events */
+/* All Events */
 .upcoming-header h3 {
   color: #ffffff;
   font-size: 16px;
@@ -241,6 +350,14 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.loading-events,
+.no-events {
+  text-align: center;
+  padding: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
 }
 
 .upcoming-event {

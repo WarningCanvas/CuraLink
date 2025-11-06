@@ -167,16 +167,123 @@ class DatabaseServices {
     return settings;
   }
 
+  // Events Services
+  async getAllEvents() {
+    return await this.db.all(`
+      SELECT * FROM events 
+      ORDER BY event_date ASC, event_time ASC
+    `);
+  }
+
+  async getEventById(id) {
+    return await this.db.get('SELECT * FROM events WHERE id = ?', [id]);
+  }
+
+  async createEvent(eventData) {
+    const id = uuidv4();
+    const { contact_id, contact_name, event_type, event_date, event_time, notes, color } = eventData;
+    
+    await this.db.run(`
+      INSERT INTO events (id, contact_id, contact_name, event_type, event_date, event_time, notes, color)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `, [id, contact_id, contact_name, event_type, event_date, event_time, notes || '', color || '#6366f1']);
+    
+    return await this.getEventById(id);
+  }
+
+  async updateEvent(id, eventData) {
+    const { contact_id, contact_name, event_type, event_date, event_time, notes, color, is_completed, reminder_sent } = eventData;
+    
+    await this.db.run(`
+      UPDATE events 
+      SET contact_id = ?, contact_name = ?, event_type = ?, event_date = ?, event_time = ?, 
+          notes = ?, color = ?, is_completed = ?, reminder_sent = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `, [contact_id, contact_name, event_type, event_date, event_time, notes, color, is_completed, reminder_sent, id]);
+    
+    return await this.getEventById(id);
+  }
+
+  async deleteEvent(id) {
+    return await this.db.run('DELETE FROM events WHERE id = ?', [id]);
+  }
+
+  async getUpcomingEvents(days = 1) {
+    const today = new Date();
+    const futureDate = new Date();
+    futureDate.setDate(today.getDate() + days);
+    
+    const todayStr = today.toISOString().split('T')[0];
+    const futureDateStr = futureDate.toISOString().split('T')[0];
+    
+    return await this.db.all(`
+      SELECT * FROM events 
+      WHERE event_date >= ? AND event_date <= ? AND is_completed = 0
+      ORDER BY event_date ASC, event_time ASC
+    `, [todayStr, futureDateStr]);
+  }
+
+  async getEventsByDate(date) {
+    const dateStr = date.toISOString().split('T')[0];
+    return await this.db.all(`
+      SELECT * FROM events 
+      WHERE event_date = ?
+      ORDER BY event_time ASC
+    `, [dateStr]);
+  }
+
+  async getEventsByContact(contactId) {
+    return await this.db.all(`
+      SELECT * FROM events 
+      WHERE contact_id = ?
+      ORDER BY event_date ASC, event_time ASC
+    `, [contactId]);
+  }
+
+  async markEventCompleted(id) {
+    await this.db.run(`
+      UPDATE events 
+      SET is_completed = 1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `, [id]);
+    
+    return await this.getEventById(id);
+  }
+
+  async markReminderSent(id) {
+    await this.db.run(`
+      UPDATE events 
+      SET reminder_sent = 1, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `, [id]);
+    
+    return await this.getEventById(id);
+  }
+
+  async getEventsNeedingReminders() {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    return await this.db.all(`
+      SELECT * FROM events 
+      WHERE event_date = ? AND reminder_sent = 0 AND is_completed = 0
+      ORDER BY event_time ASC
+    `, [tomorrowStr]);
+  }
+
   // Utility methods
   async getStats() {
     const contactCount = await this.db.get('SELECT COUNT(*) as count FROM contacts');
     const templateCount = await this.db.get('SELECT COUNT(*) as count FROM templates');
     const messageCount = await this.db.get('SELECT COUNT(*) as count FROM message_history');
+    const eventCount = await this.db.get('SELECT COUNT(*) as count FROM events');
     
     return {
       contacts: contactCount.count,
       templates: templateCount.count,
-      messages: messageCount.count
+      messages: messageCount.count,
+      events: eventCount.count
     };
   }
 

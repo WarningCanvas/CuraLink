@@ -18,5 +18,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
     create: (data) => ipcRenderer.invoke('db-contacts', 'create', data),
     update: (data) => ipcRenderer.invoke('db-contacts', 'update', data),
     delete: (id) => ipcRenderer.invoke('db-contacts', 'delete', id)
+  },
+  
+  events: {
+    getAll: () => ipcRenderer.invoke('db-events', 'getAll'),
+    getUpcoming: (days) => ipcRenderer.invoke('db-events', 'getUpcoming', days),
+    getByDate: (date) => ipcRenderer.invoke('db-events', 'getByDate', date),
+    getByContact: (contactId) => ipcRenderer.invoke('db-events', 'getByContact', contactId),
+    create: (data) => ipcRenderer.invoke('db-events', 'create', data),
+    update: (data) => ipcRenderer.invoke('db-events', 'update', data),
+    delete: (id) => ipcRenderer.invoke('db-events', 'delete', id),
+    markCompleted: (id) => ipcRenderer.invoke('db-events', 'markCompleted', id),
+    markReminderSent: (id) => ipcRenderer.invoke('db-events', 'markReminderSent', id),
+    getNeedingReminders: () => ipcRenderer.invoke('db-events', 'getNeedingReminders')
   }
 });

@@ -1,35 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EventManager from './EventManager';
+import databaseService from '../services/databaseService';
 import './DashboardHeader.css';
 
 const DashboardHeader = ({ contacts = [] }) => {
   const navigate = useNavigate();
   const [showEventManager, setShowEventManager] = useState(false);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const events = [
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      type: 'Birthday',
-      icon: '🎂',
-      color: '#8b5cf6'
-    },
-    {
-      id: 2,
-      name: 'Michael Chen',
-      type: 'Anniversary',
-      icon: '🎉',
-      color: '#ef4444'
-    },
-    {
-      id: 3,
-      name: 'Emily Rodriguez',
-      type: 'Referred by Patient',
-      icon: '👤',
-      color: '#6366f1'
+  // Load upcoming events from database
+  useEffect(() => {
+    loadUpcomingEvents();
+    
+    // Set up interval to refresh events every 5 minutes
+    const interval = setInterval(loadUpcomingEvents, 5 * 60 * 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  const loadUpcomingEvents = async () => {
+    try {
+      setLoading(true);
+      // Get events for tomorrow (next 1 day)
+      const events = await databaseService.getUpcomingEvents(1);
+      
+      // Format events for display and limit to top 3
+      const formattedEvents = events.slice(0, 3).map(event => ({
+        id: event.id,
+        name: event.contact_name,
+        type: formatEventType(event.event_type),
+        icon: getEventIcon(event.event_type),
+        color: event.color || getEventColor(event.event_type),
+        time: event.event_time,
+        date: event.event_date
+      }));
+      
+      setUpcomingEvents(formattedEvents);
+    } catch (error) {
+      console.error('Failed to load upcoming events:', error);
+      setUpcomingEvents([]);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const formatEventType = (type) => {
+    const typeMap = {
+      'appointment': 'Appointment',
+      'birthday': 'Birthday',
+      'anniversary': 'Anniversary',
+      'follow-up': 'Follow-up',
+      'consultation': 'Consultation',
+      'reminder': 'Reminder'
+    };
+    return typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
+  };
+
+  const getEventIcon = (type) => {
+    const iconMap = {
+      'appointment': '📅',
+      'birthday': '🎂',
+      'anniversary': '🎉',
+      'follow-up': '📋',
+      'consultation': '👨‍⚕️',
+      'reminder': '⏰'
+    };
+    return iconMap[type] || '📅';
+  };
+
+  const getEventColor = (type) => {
+    const colorMap = {
+      'appointment': '#10b981',
+      'birthday': '#8b5cf6',
+      'anniversary': '#06b6d4',
+      'follow-up': '#f59e0b',
+      'consultation': '#ef4444',
+      'reminder': '#6366f1'
+    };
+    return colorMap[type] || '#6366f1';
+  };
+
+  // Refresh events when EventManager closes (in case new events were added)
+  const handleEventManagerClose = () => {
+    setShowEventManager(false);
+    loadUpcomingEvents();
+  };
 
   return (
     <header className="dashboard-header">
@@ -44,16 +101,27 @@ const DashboardHeader = ({ contacts = [] }) => {
       {/* Center - Events */}
       <div className="header-center">
         <div className="events-container">
-          {events.map(event => (
-            <div 
-              key={event.id} 
-              className="event-badge"
-              style={{ backgroundColor: event.color }}
-            >
-              <span className="event-icon">{event.icon}</span>
-              <span className="event-text">{event.name} • {event.type}</span>
+          {loading ? (
+            <div className="events-loading">
+              <span>Loading events...</span>
             </div>
-          ))}
+          ) : upcomingEvents.length === 0 ? (
+            <div className="no-events">
+              <span>No upcoming events</span>
+            </div>
+          ) : (
+            upcomingEvents.map(event => (
+              <div 
+                key={event.id} 
+                className="event-badge"
+                style={{ backgroundColor: event.color }}
+                title={`${event.name} - ${event.type} at ${event.time}`}
+              >
+                <span className="event-icon">{event.icon}</span>
+                <span className="event-text">{event.name} • {event.type}</span>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -98,7 +166,7 @@ const DashboardHeader = ({ contacts = [] }) => {
       {/* Event Manager Modal */}
       <EventManager
         isOpen={showEventManager}
-        onClose={() => setShowEventManager(false)}
+        onClose={handleEventManagerClose}
         contacts={contacts}
       />
     </header>

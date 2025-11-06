@@ -37,6 +37,8 @@ class DatabaseService {
         return this.handleTemplatesInBrowser(action, data);
       case 'db-contacts':
         return this.handleContactsInBrowser(action, data);
+      case 'db-events':
+        return this.handleEventsInBrowser(action, data);
       default:
         return Promise.resolve([]);
     }
@@ -221,6 +223,54 @@ class DatabaseService {
     return await this.invoke('db-templates', 'delete', templateId);
   }
 
+  handleEventsInBrowser(action, data) {
+    const key = 'curalink-events';
+    const defaultEvents = [];
+
+    switch (action) {
+      case 'getAll':
+        const stored = localStorage.getItem(key);
+        return Promise.resolve(stored ? JSON.parse(stored) : defaultEvents);
+      
+      case 'getUpcoming':
+        const allEvents = JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultEvents));
+        const today = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + (data || 1));
+        
+        const upcoming = allEvents.filter(event => {
+          const eventDate = new Date(event.event_date);
+          return eventDate >= today && eventDate <= futureDate && !event.is_completed;
+        });
+        return Promise.resolve(upcoming);
+      
+      case 'create':
+        const events = JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultEvents));
+        const newEvent = { ...data, id: Date.now().toString() };
+        events.push(newEvent);
+        localStorage.setItem(key, JSON.stringify(events));
+        return Promise.resolve(newEvent);
+      
+      case 'update':
+        const allEventsForUpdate = JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultEvents));
+        const index = allEventsForUpdate.findIndex(e => e.id === data.id);
+        if (index !== -1) {
+          allEventsForUpdate[index] = data;
+          localStorage.setItem(key, JSON.stringify(allEventsForUpdate));
+        }
+        return Promise.resolve(data);
+      
+      case 'delete':
+        const eventsForDelete = JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultEvents));
+        const filtered = eventsForDelete.filter(e => e.id !== data);
+        localStorage.setItem(key, JSON.stringify(filtered));
+        return Promise.resolve({ success: true });
+      
+      default:
+        return Promise.resolve([]);
+    }
+  }
+
   // Contact methods
   async getAllContacts() {
     return await this.invoke('db-contacts', 'getAll');
@@ -236,6 +286,47 @@ class DatabaseService {
 
   async deleteContact(contactId) {
     return await this.invoke('db-contacts', 'delete', contactId);
+  }
+
+  // Event methods
+  async getAllEvents() {
+    return await this.invoke('db-events', 'getAll');
+  }
+
+  async getUpcomingEvents(days = 1) {
+    return await this.invoke('db-events', 'getUpcoming', days);
+  }
+
+  async getEventsByDate(date) {
+    return await this.invoke('db-events', 'getByDate', date);
+  }
+
+  async getEventsByContact(contactId) {
+    return await this.invoke('db-events', 'getByContact', contactId);
+  }
+
+  async createEvent(eventData) {
+    return await this.invoke('db-events', 'create', eventData);
+  }
+
+  async updateEvent(eventData) {
+    return await this.invoke('db-events', 'update', eventData);
+  }
+
+  async deleteEvent(eventId) {
+    return await this.invoke('db-events', 'delete', eventId);
+  }
+
+  async markEventCompleted(eventId) {
+    return await this.invoke('db-events', 'markCompleted', eventId);
+  }
+
+  async markReminderSent(eventId) {
+    return await this.invoke('db-events', 'markReminderSent', eventId);
+  }
+
+  async getEventsNeedingReminders() {
+    return await this.invoke('db-events', 'getNeedingReminders');
   }
 }
 
